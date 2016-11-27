@@ -20,6 +20,18 @@
                     Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
                 <ResourceDictionary Source="Resources/OriginTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <Color x:Key="EliteOrange">
+                #ff7100
+            </Color>
+
+            <Color x:Key="SynthesisBlue">
+                #9CBDD4
+            </Color>
+
+            <SolidColorBrush x:Key="EliteOrangeBrush" Color="{StaticResource EliteOrange}"/>
+            <SolidColorBrush x:Key="SynthesisBlueBrush" Color="{StaticResource SynthesisBlue}"/>
+            
             <converters:RarityToIconConverter x:Key="RarityToIcon" />
             <converters:DoubleToPercentConverter x:Key="DoubleToPercent" />
             <converters:IngredientToVisibilityConverter x:Key="IngredientToVisibility" />
@@ -31,11 +43,11 @@
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
             <converters:OriginToControlTemplateConverter x:Key="OriginToControlTemplate" />
             <converters:OriginToColorConverter x:Key="OriginToColor" />
-
-            <SolidColorBrush x:Key="EliteOrange">
-                <SolidColorBrush.Color>#ff7100</SolidColorBrush.Color>
-            </SolidColorBrush>
-
+            <converters:BooleanToOpacityConverter x:Key="BooleanToOpacity" />
+            <converters:BooleanToSynthesisColorConverter x:Key="BooleanToSynthesisColor"
+                                                         SynthesisColor="{StaticResource SynthesisBlueBrush}"
+                                                         NormalColor="{StaticResource EliteOrangeBrush}"/>
+            
             <BitmapImage x:Key="DesignRaritySource" UriSource="Resources/Images/common.png"/>
             
             <Style TargetType="ToolTip" x:Key="TooltipStyle">
@@ -395,6 +407,7 @@
                 <Setter Property="RowStyle">
                     <Setter.Value>
                         <Style TargetType="{x:Type DataGridRow}">
+                            <Setter Property="DetailsVisibility" Value="Collapsed"/>
                             <Setter Property="custom:DataGridRowHelper.SelectionUnit"
             					Value="{Binding SelectionUnit, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type DataGrid}}}" />
                             <Setter Property="Margin" Value="0" />
@@ -419,6 +432,26 @@
                                 </Setter.Value>
                             </Setter>
                             <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="DetailsVisibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="DetailsVisibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.1"  Value="{x:Static Visibility.Collapsed}"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="custom:DataGridRowHelper.SelectionUnit" Value="FullRow" />
@@ -464,7 +497,7 @@
                                     <Setter Property="Background" Value="Black" />
                                     <Setter Property="BorderBrush"
             							Value="{DynamicResource MetroDataGrid.MouseOverHighlightBrush}" />
-                                    <Setter Property="Foreground" Value="{StaticResource EliteOrange}" />
+                                    <Setter Property="Foreground" Value="{StaticResource EliteOrangeBrush}" />
                                 </MultiTrigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -474,6 +507,9 @@
                                     <Setter Property="Foreground"
             							Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
                                 </MultiTrigger>
+                                <DataTrigger Binding="{Binding Synthesis}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource SynthesisBlueBrush}"/>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Setter.Value>
@@ -564,6 +600,38 @@
                     <Trigger Property="IsGrouping" Value="True">
                         <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
                     </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="Grid" x:Key="BlueprintDetailsGridStyle">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}"                                      Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="LayoutTransform.ScaleY">
+                                        <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1">
+                                            <EasingDoubleKeyFrame.EasingFunction>
+                                                <CubicEase EasingMode="EaseInOut" />
+                                            </EasingDoubleKeyFrame.EasingFunction>
+                                        </EasingDoubleKeyFrame>
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="LayoutTransform.ScaleY">
+                                        <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0">
+                                            <EasingDoubleKeyFrame.EasingFunction>
+                                                <CubicEase EasingMode="EaseInOut" />
+                                            </EasingDoubleKeyFrame.EasingFunction>
+                                        </EasingDoubleKeyFrame>
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
         </ResourceDictionary>

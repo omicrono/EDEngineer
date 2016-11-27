@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,8 +14,8 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using EDEngineer.Localization;
 using EDEngineer.Models;
-using EDEngineer.Models.Localization;
 using EDEngineer.Utils;
 using EDEngineer.Utils.System;
 using EDEngineer.Utils.UI;
@@ -27,6 +28,7 @@ namespace EDEngineer
     public partial class MainWindow
     {
         private readonly MainWindowViewModel viewModel;
+        private readonly ServerBridge serverBridge;
 
         public MainWindow()
         {
@@ -77,18 +79,20 @@ namespace EDEngineer
             viewModel.PropertyChanged += (o, e) =>
                                          {
                                              if (e.PropertyName == "ShowOnlyForFavorites" ||
-                                                 e.PropertyName == "ShowZeroes")
+                                                 e.PropertyName == "ShowZeroes" ||
+                                                 e.PropertyName == "CurrentCommander")
                                              {
                                                  RefreshCargoSources();
                                              }
                                          };
+            serverBridge = new ServerBridge(viewModel, SettingsManager.AutoRunServer);
         }
 
         public void RefreshCargoSources()
         {
             var commander = viewModel.CurrentCommander.Value;
 
-            var blueprintSource = new CollectionViewSource { Source = commander.Blueprints };
+            var blueprintSource = new CollectionViewSource { Source = commander.State.Blueprints };
             commander.Filters.Monitor(blueprintSource, commander.State.Cargo.Select(c => c.Value));
             Blueprints.ItemsSource = blueprintSource.View;
 
@@ -129,7 +133,9 @@ namespace EDEngineer
                 (o, e) => Close(), ConfigureShortcut, 
                 (o, e) => ToggleEditModeChecked(o, null),
                 (o, e) => ResetWindowPositionButtonClicked(o, null),
-                (o, e) => Languages.PromptLanguage(viewModel.Languages));
+                (o, e) => Languages.PromptLanguage(viewModel.Languages),
+                () => serverBridge.Toggle(),
+                serverBridge.Running);
 
             var shortcut = SettingsManager.Shortcut;
 
@@ -335,6 +341,7 @@ namespace EDEngineer
             }
 
             viewModel?.LogWatcher?.Dispose();
+            serverBridge?.Dispose();
         }
 
         private void WindowActivatedCompleted(object sender, EventArgs e)
@@ -379,6 +386,7 @@ namespace EDEngineer
         }
 
         private bool bypassPositionSave = false;
+
         private void ResetWindowPositionButtonClicked(object sender, RoutedEventArgs e)
         {
             SettingsManager.Dimensions.Reset();

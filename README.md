@@ -39,13 +39,13 @@ Install the [setup.exe](https://cdn.rawgit.com/msarilar/EDEngineer/master/EDEngi
   <img src="http://i.imgur.com/YBUPheF.png" alt="Toast"/>
 </p>
 <p align="center">
-  <img src="http://i.imgur.com/JuSJYCd.png" alt="Tray Icon"/>
+  <img src="http://i.imgur.com/3sKXcYE.png" alt="Tray Icon"/>
 </p>
 
 ### Languages
 
 <p align="center">
-  <img src="http://i.imgur.com/iTzyWRl.png" alt="Translation Progress"/>
+  <img src="http://i.imgur.com/pR2NMbr.png" alt="Translation Progress"/>
 </p>
 
 Español: OK
@@ -55,9 +55,9 @@ Español: OK
 Deutsch: OK
 > ~~Diese Übersetzung ist unvollständig! Wenn Sie es auswählen, werden nur Teile der Anwendung übersetzt. Alles, was noch nicht übersetzt wurde, wird auf Englisch angezeigt.~~
 
-Français:
-> Cette traduction est incomplète! Si vous la sélectionnez, seules des parties de l'application seront traduites.
-> Tout ce qui n'a pas encore été traduit sera affiché en anglais.
+Français: OK
+> ~~Cette traduction est incomplète! Si vous la sélectionnez, seules des parties de l'application seront traduites.~~
+> ~~Tout ce qui n'a pas encore été traduit sera affiché en anglais.~~
 
-Русский:
-> Этот перевод является неполным! Если вы выберете его - будет переведена только часть приложения. Недостающий перевод будет отображаться на Английском языке.
+Русский: OK
+> ~~Этот перевод является неполным! Если вы выберете его - будет переведена только часть приложения. Недостающий перевод будет отображаться на Английском языке.~~
